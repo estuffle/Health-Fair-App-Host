@@ -43,11 +43,11 @@
         <div id="input-form">
             <h2 class="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">Your Profile</h2>
             
-            <!-- Age Input - Changed to Number Box -->
+            <!-- Age Input -->
             <div class="mb-5 bg-blue-50 p-4 rounded-lg">
                 <label for="age" class="block text-sm font-medium text-gray-700 mb-2">How old are you?</label>
                 <div class="relative">
-                    <input type="number" id="age" name="age" min="18" max="120" placeholder="Enter age" class="w-full p-3 border-2 border-blue-200 rounded-lg focus:border-blue-500 focus:outline-none text-lg font-semibold text-blue-800">
+                    <input type="number" id="age" name="age" min="1" max="120" placeholder="Enter age" class="w-full p-3 border-2 border-blue-200 rounded-lg focus:border-blue-500 focus:outline-none text-lg font-semibold text-blue-800">
                     <span class="absolute right-3 top-3 text-gray-400">years</span>
                 </div>
             </div>
@@ -68,19 +68,30 @@
             </div>
 
             <!-- Risk Factor Inputs -->
-            <h2 class="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">Risk Factors</h2>
+            <h2 class="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">Health Factors</h2>
 
             <div class="space-y-4">
+                <!-- BMI/Weight Risk -->
+                <div class="flex items-start bg-gray-50 p-3 rounded-lg border border-gray-100">
+                    <input id="bmi-risk" type="checkbox" class="h-6 w-6 text-blue-600 border-gray-300 rounded focus:ring-blue-500 mt-0.5">
+                    <label for="bmi-risk" class="ml-3 text-sm font-medium text-gray-700 flex-1 leading-tight">
+                        Overweight or Obese (BMI > 25)
+                    </label>
+                </div>
+
+                <!-- NEW: High Diabetes Risk Factors -->
+                <div class="flex items-start bg-gray-50 p-3 rounded-lg border border-gray-100">
+                    <input id="diabetes-history" type="checkbox" class="h-6 w-6 text-blue-600 border-gray-300 rounded focus:ring-blue-500 mt-0.5">
+                    <label for="diabetes-history" class="ml-3 text-sm font-medium text-gray-700 flex-1 leading-tight">
+                        High risk for Diabetes? (History of pre-diabetes, PCOS, or strong family history)
+                    </label>
+                </div>
+
+                <!-- Smoking Risk -->
                 <div class="flex items-start bg-gray-50 p-3 rounded-lg border border-gray-100">
                     <input id="smoker" type="checkbox" class="h-6 w-6 text-blue-600 border-gray-300 rounded focus:ring-blue-500 mt-0.5">
                     <label for="smoker" class="ml-3 text-sm font-medium text-gray-700 flex-1 leading-tight">
                         Current smoker, or quit within the last 15 years?
-                    </label>
-                </div>
-                <div class="flex items-start bg-gray-50 p-3 rounded-lg border border-gray-100">
-                    <input id="diabetes-risk" type="checkbox" class="h-6 w-6 text-blue-600 border-gray-300 rounded focus:ring-blue-500 mt-0.5">
-                    <label for="diabetes-risk" class="ml-3 text-sm font-medium text-gray-700 flex-1 leading-tight">
-                        Overweight/Obese (BMI > 25) or high risk for diabetes?
                     </label>
                 </div>
             </div>
@@ -97,7 +108,7 @@
                 <div class="text-3xl text-green-600 mr-2" id="icon-clipboard-check"></div>
                 Your Personalized Checklist
             </h2>
-            <p class="text-gray-600 mb-6">Based on your profile, here are the informational booths you should visit today:</p>
+            <p class="text-gray-600 mb-6">Based on your profile, visit these informational booths:</p>
             
             <div id="recommendation-cards" class="space-y-4">
                 <!-- Recommendations will be inserted here -->
@@ -111,55 +122,52 @@
     </div>
 
     <script type="text/javascript">
-        // Global utility to generate a unique ID
         const generateUUID = () => {
             return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
                 (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
             );
         };
 
-        // Initialize icons
         document.addEventListener('DOMContentLoaded', () => {
             lucide.createIcons();
         });
 
-        // Mapping of Booths (Recommendations) to their details
         const BOOTHS = {
             'hypertension': { 
                 title: 'Blood Pressure Screening', 
                 icon: 'activity', 
                 color: 'blue', 
-                description: 'Booth: Vital Signs Check. All adults should have their blood pressure checked regularly. Learn how to manage high BP (hypertension).' 
+                description: 'Booth: Vital Signs Check. All adults should have their blood pressure checked regularly.' 
             },
             'diabetes': { 
                 title: 'Type 2 Diabetes Screening', 
                 icon: 'coffee', 
                 color: 'red', 
-                description: 'Booth: Blood Sugar Test. Learn about testing, healthy diets, and lifestyle changes to prevent or manage type 2 diabetes.' 
+                description: 'Booth: Blood Sugar Test. Learn about screening for pre-diabetes and type 2 diabetes.' 
             },
             'colon_cancer': { 
                 title: 'Colorectal Cancer Screening', 
                 icon: 'shield-check', 
                 color: 'green', 
-                description: 'Booth: Cancer Prevention. Discuss screening options (like stool tests or colonoscopy) and risk factors for this common cancer.' 
+                description: 'Booth: Cancer Prevention. Discuss screening options for colon health.' 
             },
             'smoking_cessation': { 
                 title: 'Smoking Cessation & Lung Health', 
                 icon: 'cigarette-off', 
                 color: 'orange', 
-                description: 'Booth: Respiratory Health. Get tools, resources, and support to quit smoking, or learn about lung cancer screening if you qualify.' 
+                description: 'Booth: Respiratory Health. Get tools and support to quit smoking.' 
             },
             'cervical_cancer': { 
                 title: 'Cervical Cancer Screening', 
                 icon: 'heart', 
                 color: 'pink', 
-                description: 'Booth: Women\'s Health. Learn about Pap tests and HPV testing, which are vital for preventing cervical cancer.' 
+                description: 'Booth: Women\'s Health. Vital screening for cervical cancer prevention.' 
             },
             'aaa_screening': { 
                 title: 'Aortic Aneurysm Screening (AAA)', 
                 icon: 'ruler', 
                 color: 'indigo', 
-                description: 'Booth: Vascular Health. Single-time ultrasound screening for abdominal aortic aneurysm, especially for those with a smoking history.' 
+                description: 'Booth: Vascular Health. One-time ultrasound screening for men with smoking history.' 
             }
         };
 
@@ -167,7 +175,6 @@
             const ageInput = document.getElementById('age');
             const age = parseInt(ageInput.value);
 
-            // Validation: Ensure age is entered
             if (isNaN(age) || age < 1) {
                 ageInput.classList.add('border-red-500');
                 ageInput.focus();
@@ -178,15 +185,18 @@
 
             const sex = document.querySelector('input[name="sex"]:checked').value;
             const isSmoker = document.getElementById('smoker').checked;
-            const isHighDiabetesRisk = document.getElementById('diabetes-risk').checked;
+            const isBMIRisk = document.getElementById('bmi-risk').checked;
+            const hasDiabetesHistory = document.getElementById('diabetes-history').checked;
 
             const recommendations = new Set();
             
-            // 1. Hypertension Screening - Universal for Adults
+            // 1. Hypertension Screening - Universal
             recommendations.add('hypertension');
 
             // 2. Type 2 Diabetes Screening
-            if (age >= 35 && age <= 70 && isHighDiabetesRisk) {
+            // Rule A: Standard USPSTF (Age 35-70 with BMI Risk)
+            // Rule B: High Risk (Under 35 with family history/pre-diabetes/PCOS)
+            if ((age >= 35 && age <= 70 && isBMIRisk) || hasDiabetesHistory) {
                 recommendations.add('diabetes');
             }
 
@@ -222,7 +232,6 @@
                 resultsContainer.appendChild(card);
             });
             
-            // Show the results area and hide the input form
             document.getElementById('input-form').classList.add('hidden');
             document.getElementById('results-area').classList.remove('hidden');
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -248,7 +257,8 @@
             document.getElementById('results-area').classList.add('hidden');
             document.getElementById('age').value = '';
             document.getElementById('smoker').checked = false;
-            document.getElementById('diabetes-risk').checked = false;
+            document.getElementById('bmi-risk').checked = false;
+            document.getElementById('diabetes-history').checked = false;
             document.getElementById('sex-male').checked = true;
         }
     </script>
